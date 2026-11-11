@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A simple application that prints all artists in the Chinook database.
@@ -36,6 +39,7 @@ public class JdbcDemoMain {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        List<String> list = new ArrayList<>();
 
         try {
             // Create a connection to the database
@@ -64,9 +68,12 @@ public class JdbcDemoMain {
                  * data, such as getInt() and getDouble().
                  */
                 String name = resultSet.getString("Name");
-
-                System.out.println(name);
+                int number = resultSet.getInt("ArtistId");
+                list.add(name + number);
             }
+            Collections.sort(list);
+            System.out.println(list);
+
         } catch (SQLException e) {
             /*
              * Operations that access the database can throw SQLExceptions. SQLException is
