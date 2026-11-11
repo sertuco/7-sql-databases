@@ -1,5 +1,10 @@
 package databases.part02;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +36,13 @@ public class ArtistDAO {
      *
      * @return a list of all artists in the database.
      */
+
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
+
     public List<Artist> getArtists() {
         List<Artist> artists = new ArrayList<>();
-
         /*
          * hint: see the class from part 1 for an example of how to connect to the
          * database and retrieve data from it. This time create new Artist objects
@@ -43,7 +52,19 @@ public class ArtistDAO {
          * to the database. You can't "hard code" the connection string, as that would
          * make tests run against your actual database, which may have unexpected data.
          */
+        try {
+            connection = DriverManager.getConnection(connectionString);
+            preparedStatement = connection.prepareStatement("SELECT ArtistId, Name FROM Artist ORDER BY Name ASC");
+            resultSet = preparedStatement.executeQuery();
 
+            while (resultSet.next()) {
+                String name = resultSet.getString("Name");
+                int number = resultSet.getInt("ArtistId");
+                artists.add(new Artist(number, name));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return artists;
     }
 
@@ -71,6 +92,11 @@ public class ArtistDAO {
          * to the database. You can't "hard code" the connection string, as that would
          * make tests run against your actual database, which may have unexpected data.
          */
+        for (Artist artist : getArtists()) {
+            if (artist.getId() == id) {
+                return artist;
+            }
+        }
         return null;
     }
 }
